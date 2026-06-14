@@ -1,26 +1,10 @@
 import { useEffect, useState } from "react";
-import type { Company, CompanyForm } from "./types/company";
-import { priorityOptions, statusOptions } from "./constants/companyOptions";
+import type { Company } from "./types/company";
 
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-//今日の日付取得
-function getToday() {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function App() {
   const [companies, setCompanies] = useState<Company[]>([]);
-
-  const [form, setForm] = useState<CompanyForm>({
-    name: "",
-    media: "",
-    priority: "3.0",
-    status: "応募済み",
-    job_url: "",
-    applied_date: getToday(),
-    memo: "",
-  });
 
   //DBから企業情報を取得する関数...
   const fetchCompanies = async () => {
@@ -40,57 +24,21 @@ function App() {
     }
   };
 
-  const createCompany = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/companies`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-      if (!response.ok) {
-        throw new Error("企業情報登録に失敗しました。");
-      }
-
-      const json = await response.json();
-
-      const createdCompany = json.data;
-
-      setCompanies((prevCompanies) => [...prevCompanies, createdCompany]);
-
-      setForm({
-        name: "",
-        media: "",
-        priority: "3.0",
-        status: "応募済み",
-        job_url: "",
-        applied_date: getToday(),
-        memo: "",
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
     fetchCompanies();
   }, []);
 
   return (
     <main className="min-h-screen bg-slate-100 px-6 py-10 text-slate-900">
-      {/* 企業登録 */}
-      <section className="mx-auto max-w-5xl rounded-xl bg-white p-6 shadow-sm mb-4">
-        <form id="register" className="mt-6 rounded-lg p-4">
+      <section className="mx-auto max-w-5xl rounded-xl bg-white p-6 shadow-sm">
+        <form id="register" className="mt-6 rounded-lg border bg-slate-50 p-4">
           <h2 className="mb-4 text-xl font-bold">企業登録</h2>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-semibold">企業名</label>
               <input
-                value={form.name}
                 type="text"
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
                 className="w-full rounded border px-3 py-2"
                 placeholder="例：株式会社サンプル"
               />
@@ -98,9 +46,7 @@ function App() {
             <div>
               <label className="mb-1 block text-sm font-semibold">媒体</label>
               <input
-                value={form.media}
                 type="text"
-                onChange={(e) => setForm({ ...form, media: e.target.value })}
                 className="w-full rounded border px-3 py-2"
                 placeholder="例：Green"
               />
@@ -108,18 +54,7 @@ function App() {
             <div>
               <label className="mb-1 block text-sm font-semibold">志望度</label>
 
-              <select
-                value={form.priority}
-                onChange={(e) => setForm({ ...form, priority: e.target.value })}
-                className="w-full rounded border bg-white px-3 py-2"
-              >
-                {priorityOptions.map((option) => {
-                  return (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  );
-                })}
+              <select className="w-full rounded border bg-white px-3 py-2">
                 {/* <option value="1.0">1.0 なんとなく（練習用）</option>
                 <option value="1.5">1.5 低め</option>
                 <option value="2.0">2.0 少し気になる</option>
@@ -133,49 +68,26 @@ function App() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-semibold">状況</label>
-              <select
-                value={form.status}
-                onChange={(e) => setForm({ ...form, status: e.target.value })}
-                className="w-full rounded border bg-white px-3 py-2"
-              >
-                {statusOptions.map((status) => {
-                  return (
-                    <option key={status} value={status}>
-                      {status}
-                    </option>
-                  );
-                })}
-              </select>
+              <select className="w-full rounded border bg-white px-3 py-2"></select>
             </div>
             <div>
               <label className="mb-1 block text-sm font-semibold">
                 求人URL
               </label>
               <input
-                value={form.job_url}
                 type="url"
-                onChange={(e) => setForm({ ...form, job_url: e.target.value })}
                 className="w-full rounded border px-3 py-2"
                 placeholder="例：https://example.com/jobs/123"
               />
             </div>
             <div>
               <label className="mb-1 block text-sm font-semibold">応募日</label>
-              <input
-                value={form.applied_date}
-                onChange={(e) =>
-                  setForm({ ...form, applied_date: e.target.value })
-                }
-                type="date"
-                className="w-full rounded border px-3 py-2"
-              />
+              <input type="date" className="w-full rounded border px-3 py-2" />
             </div>
             <div>
               <label className="mb-1 block text-sm font-semibold">メモ</label>
               <input
                 type="text"
-                value={form.memo}
-                onChange={(e) => setForm({ ...form, memo: e.target.value })}
                 className="w-full rounded border px-3 py-2"
                 placeholder="例：React経験が活かせそう"
               />
@@ -184,7 +96,6 @@ function App() {
 
           <button
             type="button"
-            onClick={createCompany}
             className="mt-4 rounded bg-slate-900 px-4 py-2 font-semibold text-white"
           >
             保存
