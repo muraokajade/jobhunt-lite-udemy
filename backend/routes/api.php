@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\CompanyController;
 
 //hello API
 Route::get("/hello", function () {
@@ -8,3 +9,5 @@ Route::get("/hello", function () {
         "message" => "Hello JobHunt Lite API",
     ]);
 });
+
+Route::apiResource('companies', CompanyController::class);
